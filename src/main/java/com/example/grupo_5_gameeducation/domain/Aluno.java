@@ -6,9 +6,13 @@ import java.util.Set;
 /**
  * US1 - Liberacao automatica de 3 novos cursos ao concluir um curso com media acima de 7,0.
  *
- * Ciclo TDD do Cenario 1 (Bruno da Silveira Escanhoela). As tres etapas estao registradas
- * neste arquivo como evidencia do processo: RED e GREEN ficam comentadas e a versao BLUE
- * (refatorada) e a que compila e roda.
+ * Os ciclos TDD dos cenarios de aceitacao estao registrados neste arquivo como evidencia
+ * do processo: para cada cenario, RED e GREEN ficam comentados e a versao BLUE (refatorada)
+ * e a que compila e roda.
+ *
+ * Cenario 1 - Bruno da Silveira Escanhoela: extracao das constantes de negocio.
+ * Cenario 2 - Gabriel Ferreira do Nascimento: extracao do metodo aprovado().
+ * Cenario 3 - Joao Guilherme Volta Kinol: guard clause de conclusao repetida.
  */
 public class Aluno {
 
@@ -78,14 +82,73 @@ public class Aluno {
     // }
 
     // =================================================================================
-    // TDD - 3o PASSO: BLUE / REFACTOR (versao ativa)
+    // TDD - 3o PASSO: BLUE / REFACTOR
     //
-    // REFATORACAO APLICADA: extracao de constantes com nome de negocio e do metodo
-    //                       aprovado(), que da nome a regra "media acima de 7,0".
+    // REFATORACAO APLICADA: extracao de constantes com nome de negocio
+    //                       (MEDIA_MINIMA_APROVACAO e CURSOS_LIBERADOS_POR_APROVACAO).
     // MOTIVO (code smell): numeros magicos (7.0 e 3) espalhados pelo codigo. Se a regra de
     //                      negocio mudar, seria preciso cacar os valores no meio da logica.
     // STATUS: testes seguem verdes.
     // =================================================================================
+
+    // #################################################################################
+    // CICLO TDD DO CENARIO 2 (Gabriel Ferreira do Nascimento) - US1
+    // BDD: media final menor ou igual a 7,0 (6,5 e 7,0) -> nenhum curso adicional
+    //      liberado, o aluno segue com 0 cursos liberados.
+    // #################################################################################
+
+    // =================================================================================
+    // TDD - 1o PASSO: RED (teste falhando)
+    // O teste naoDeveLiberarCursosQuandoMediaNaoSuperaSete foi escrito junto com o do
+    // Cenario 1, contra o mesmo stub. Enquanto o concluir() lanca a excecao, ele falha.
+    //
+    // RESULTADO OBTIDO: AlunoTest -> erro
+    //   java.lang.UnsupportedOperationException: regra de liberacao de cursos ainda nao
+    //   implementada
+    // =================================================================================
+    //
+    // public void concluir(Curso curso, double media) {
+    //     throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    // }
+
+    // =================================================================================
+    // TDD - 2o PASSO: GREEN (teste passando)
+    // Nenhuma linha nova foi necessaria. A regra escrita para o Cenario 1 ja cobre este
+    // caso porque usa "maior que", nao "maior ou igual": as medias 6,5 e 7,0 nao entram
+    // no if.
+    //
+    // RESULTADO OBTIDO: getCursosLiberados() = 0 e getCursosConquistados() = 1.
+    //                   Esperado = Obtido -> teste passou.
+    // =================================================================================
+    //
+    // public void concluir(Curso curso, double media) {
+    //     cursosConcluidos.add(curso.getTitulo());
+    //     if (media > 7.0) {          // 6,5 e 7,0 ficam de fora
+    //         cursosLiberados += 3;
+    //     }
+    // }
+
+    // =================================================================================
+    // TDD - 3o PASSO: BLUE / REFACTOR (versao ativa)
+    //
+    // REFATORACAO APLICADA: extracao do metodo aprovado(double media).
+    // MOTIVO (code smell): a condicao "media > 7.0" nao tinha nome. O metodo nomeado
+    //                      revela a intencao e evita a duvida entre "maior que" e "maior
+    //                      ou igual", que e justamente a fronteira protegida por este
+    //                      cenario.
+    // STATUS: testes seguem verdes.
+    // =================================================================================
+    //
+    // public void concluir(Curso curso, double media) {
+    //     cursosConcluidos.add(curso.getTitulo());
+    //     if (aprovado(media)) {
+    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+    //     }
+    // }
+    //
+    // private boolean aprovado(double media) {
+    //     return media > MEDIA_MINIMA_APROVACAO;
+    // }
 
     private static final double MEDIA_MINIMA_APROVACAO = 7.0;
     private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
