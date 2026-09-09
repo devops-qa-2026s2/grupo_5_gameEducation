@@ -150,6 +150,57 @@ public class Aluno {
     //     return media > MEDIA_MINIMA_APROVACAO;
     // }
 
+    // #################################################################################
+    // CICLO TDD DO CENARIO 3 (Joao Guilherme Volta Kinol) - US1
+    // BDD: concluir de novo o mesmo curso (apos ja ter recebido os 3 cursos daquela
+    //      conclusao) nao deve bonificar outra vez; o aluno segue com 3 cursos liberados
+    //      e 1 curso conquistado.
+    // #################################################################################
+
+    // =================================================================================
+    // TDD - 1o PASSO: RED (teste falhando)
+    // O teste naoDeveLiberarCursosDuasVezesParaOMesmoCurso conclui o mesmo curso duas
+    // vezes. Sem a guarda, a 2a conclusao tambem entra no if e bonifica de novo.
+    //
+    // RESULTADO OBTIDO: AlunoTest -> falha
+    //   getCursosLiberados() = 6, esperado 3 -> org.opentest4j.AssertionFailedError
+    // =================================================================================
+    //
+    // public void concluir(Curso curso, double media) {
+    //     cursosConcluidos.add(curso.getTitulo());
+    //     if (aprovado(media)) {
+    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO; // roda de novo na 2a vez
+    //     }
+    // }
+
+    // =================================================================================
+    // TDD - 2o PASSO: GREEN (teste passando)
+    // Set.add() devolve false quando o titulo ja estava no conjunto; usamos esse retorno
+    // como guarda para ignorar a conclusao repetida antes de bonificar.
+    //
+    // RESULTADO OBTIDO: getCursosLiberados() = 3 e getCursosConquistados() = 1
+    //                   Esperado = Obtido -> teste passou.
+    // =================================================================================
+    //
+    // public void concluir(Curso curso, double media) {
+    //     boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
+    //     if (!primeiraConclusao) {
+    //         return; // ja foi bonificado, ignora
+    //     }
+    //     if (aprovado(media)) {
+    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+    //     }
+    // }
+
+    // =================================================================================
+    // TDD - 3o PASSO: BLUE / REFACTOR (versao ativa no metodo concluir() abaixo)
+    //
+    // REFATORACAO APLICADA: guard clause explicita + validacao de entrada de curso nulo.
+    // MOTIVO (code smell): o metodo aceitava curso nulo em silencio e a intencao do return
+    //                      antecipado da guarda de duplicidade nao estava explicita.
+    // STATUS: testes seguem verdes.
+    // =================================================================================
+
     private static final double MEDIA_MINIMA_APROVACAO = 7.0;
     private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
 
@@ -164,7 +215,13 @@ public class Aluno {
     }
 
     public void concluir(Curso curso, double media) {
-        cursosConcluidos.add(curso.getTitulo());
+        if (curso == null) {
+            throw new IllegalArgumentException("Curso obrigatorio para registrar conclusao");
+        }
+        boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
+        if (!primeiraConclusao) {
+            return; // ja foi bonificado, ignora
+        }
         if (aprovado(media)) {
             cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
         }

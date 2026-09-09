@@ -1,6 +1,7 @@
 package com.example.grupo_5_gameeducation.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,6 +88,55 @@ class AlunoTest {
         // ASSERT
         assertEquals(0, aluno.getCursosLiberados());
         assertEquals(1, aluno.getCursosConquistados());
+    }
+
+    /**
+     * Cenario 3 da US1 - Joao Guilherme Volta Kinol.
+     *
+     * BDD:
+     *   Dado que o aluno concluiu o curso "Qualidade de Software" com media 9,0
+     *   E ja recebeu os 3 cursos referentes a essa conclusao
+     *   Quando a conclusao do mesmo curso for registrada novamente
+     *   Entao a liberacao nao deve ocorrer uma segunda vez
+     *   E o aluno continua com 3 cursos liberados e 1 curso conquistado
+     *
+     * Execucao ao longo do ciclo (o Aluno.java e que muda, nao este teste):
+     *   RED   -> Tests run: 3, Failures: 1, Errors: 0
+     *            sem a guarda, a 2a conclusao bonifica de novo: getCursosLiberados() = 6,
+     *            esperado 3 -> AssertionFailedError (RED valido).
+     *   GREEN -> Tests run: 3, Failures: 0, Errors: 0
+     *            a guarda com Set.add()==false ignora a conclusao repetida.
+     *   BLUE  -> Tests run: 3, Failures: 0, Errors: 0
+     *            guard clause + validacao de curso nulo nao mudaram o comportamento. Verde.
+     */
+    @Test
+    @DisplayName("Cenario 3 (Joao): conclusao repetida do mesmo curso nao bonifica de novo")
+    void naoDeveLiberarCursosDuasVezesParaOMesmoCurso() {
+        // ARRANGE
+        Aluno aluno = new Aluno("Joao Guilherme Volta Kinol", Plano.BASICO);
+        Curso curso = new Curso("Qualidade de Software");
+
+        // ACTION
+        aluno.concluir(curso, 9.0);
+        aluno.concluir(curso, 9.0); // deve ser ignorado
+
+        // ASSERT
+        assertEquals(3, aluno.getCursosLiberados());
+        assertEquals(1, aluno.getCursosConquistados());
+    }
+
+    /**
+     * Cobertura da guard clause do BLUE do Cenario 3 (Joao): concluir com curso nulo deve
+     * lancar IllegalArgumentException, cobrindo o ramo de validacao de entrada no Jacoco.
+     */
+    @Test
+    @DisplayName("Concluir com curso nulo lanca IllegalArgumentException")
+    void deveLancarExcecaoQuandoCursoForNulo() {
+        // ARRANGE
+        Aluno aluno = new Aluno("Joao Guilherme Volta Kinol", Plano.BASICO);
+
+        // ASSERT
+        assertThrows(IllegalArgumentException.class, () -> aluno.concluir(null, 9.0));
     }
 
     /**
