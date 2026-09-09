@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "gameeducation Postgres",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "gameeducation",
+      "Username": "gameeducation",
+      "SSLMode": "prefer"
+    }
+  }
+}

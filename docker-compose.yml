@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    container_name: gameeducation-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gameeducation
+      SPRING_DATASOURCE_USERNAME: gameeducation
+      SPRING_DATASOURCE_PASSWORD: gameeducation
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: gameeducation-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: gameeducation
+      POSTGRES_USER: gameeducation
+      POSTGRES_PASSWORD: gameeducation
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gameeducation -d gameeducation"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gameeducation-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gameeducation.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./docker/pgadmin-servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
