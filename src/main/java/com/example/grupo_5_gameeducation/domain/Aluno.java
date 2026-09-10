@@ -6,9 +6,8 @@ import java.util.Set;
 /**
  * US1 - Liberacao automatica de 3 novos cursos ao concluir um curso com media acima de 7,0.
  *
- * Os ciclos TDD dos cenarios de aceitacao estao registrados neste arquivo como evidencia
- * do processo: para cada cenario, RED e GREEN ficam comentados e a versao BLUE (refatorada)
- * e a que compila e roda.
+ * Cada bloco comentado e uma versao completa da classe num ponto do ciclo TDD.
+ * So um bloco pode estar ativo por vez, senao a classe nao compila.
  *
  * Cenario 1 - Bruno da Silveira Escanhoela: extracao das constantes de negocio.
  * Cenario 2 - Gabriel Ferreira do Nascimento: extracao do metodo aprovado().
@@ -16,190 +15,326 @@ import java.util.Set;
  */
 public class Aluno {
 
-    // =================================================================================
-    // TDD - 1o PASSO: RED (teste falhando)
-    // Stub sem regra de negocio. Lanca UnsupportedOperationException para garantir que o
-    // teste falhe de verdade - se retornasse 0, o cenario de media <= 7,0 passaria por
-    // acidente e a etapa RED ficaria invalida.
-    //
-    // RESULTADO OBTIDO: AlunoTest -> 1 erro
-    //   java.lang.UnsupportedOperationException: regra de liberacao de cursos ainda nao
-    //   implementada (AlunoTest.java, linha do aluno.concluir)
-    // =================================================================================
-    //
-    // private final String nome;
-    // private final Plano plano;
-    //
-    // public Aluno(String nome, Plano plano) {
-    //     this.nome = nome;
-    //     this.plano = plano;
-    // }
-    //
-    // public void concluir(Curso curso, double media) {
-    //     throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
-    // }
-    //
-    // public int getCursosLiberados() {
-    //     throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
-    // }
-    //
-    // public int getCursosConquistados() {
-    //     throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
-    // }
+    // ================= CENARIO 1 (Bruno) =================
+    // BDD: media 8,5 -> libera 3 cursos, 1 curso conquistado.
 
-    // =================================================================================
-    // TDD - 2o PASSO: GREEN (teste passando)
-    // Implementacao mais simples que faz o teste passar. O Set de titulos garante que o
-    // total de cursos conquistados nao conte o mesmo curso duas vezes.
-    //
-    // RESULTADO OBTIDO: getCursosLiberados() = 3 e getCursosConquistados() = 1
-    //                   Esperado = Obtido -> teste passou
-    // =================================================================================
-    //
-    // private final String nome;
-    // private final Plano plano;
-    // private final Set<String> cursosConcluidos = new HashSet<>();
-    // private int cursosLiberados;
-    //
-    // public Aluno(String nome, Plano plano) {
-    //     this.nome = nome;
-    //     this.plano = plano;
-    // }
-    //
-    // public void concluir(Curso curso, double media) {
-    //     cursosConcluidos.add(curso.getTitulo());
-    //     if (media > 7.0) {
-    //         cursosLiberados += 3;
-    //     }
-    // }
-    //
-    // public int getCursosLiberados() {
-    //     return cursosLiberados;
-    // }
-    //
-    // public int getCursosConquistados() {
-    //     return cursosConcluidos.size();
-    // }
+    // RED: deveLiberarTresCursosQuandoMediaAcimaDeSete falha, stub sem regra de negocio.
+    /*
+    private final String nome;
+    private final Plano plano;
 
-    // =================================================================================
-    // TDD - 3o PASSO: BLUE / REFACTOR
-    //
-    // REFATORACAO APLICADA: extracao de constantes com nome de negocio
-    //                       (MEDIA_MINIMA_APROVACAO e CURSOS_LIBERADOS_POR_APROVACAO).
-    // MOTIVO (code smell): numeros magicos (7.0 e 3) espalhados pelo codigo. Se a regra de
-    //                      negocio mudar, seria preciso cacar os valores no meio da logica.
-    // STATUS: testes seguem verdes.
-    // =================================================================================
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
 
-    // #################################################################################
-    // CICLO TDD DO CENARIO 2 (Gabriel Ferreira do Nascimento) - US1
-    // BDD: media final menor ou igual a 7,0 (6,5 e 7,0) -> nenhum curso adicional
-    //      liberado, o aluno segue com 0 cursos liberados.
-    // #################################################################################
+    public void concluir(Curso curso, double media) {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
 
-    // =================================================================================
-    // TDD - 1o PASSO: RED (teste falhando)
-    // O teste naoDeveLiberarCursosQuandoMediaNaoSuperaSete foi escrito junto com o do
-    // Cenario 1, contra o mesmo stub. Enquanto o concluir() lanca a excecao, ele falha.
-    //
-    // RESULTADO OBTIDO: AlunoTest -> erro
-    //   java.lang.UnsupportedOperationException: regra de liberacao de cursos ainda nao
-    //   implementada
-    // =================================================================================
-    //
-    // public void concluir(Curso curso, double media) {
-    //     throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
-    // }
+    public String getNome() {
+        return nome;
+    }
 
-    // =================================================================================
-    // TDD - 2o PASSO: GREEN (teste passando)
-    // Nenhuma linha nova foi necessaria. A regra escrita para o Cenario 1 ja cobre este
-    // caso porque usa "maior que", nao "maior ou igual": as medias 6,5 e 7,0 nao entram
-    // no if.
-    //
-    // RESULTADO OBTIDO: getCursosLiberados() = 0 e getCursosConquistados() = 1.
-    //                   Esperado = Obtido -> teste passou.
-    // =================================================================================
-    //
-    // public void concluir(Curso curso, double media) {
-    //     cursosConcluidos.add(curso.getTitulo());
-    //     if (media > 7.0) {          // 6,5 e 7,0 ficam de fora
-    //         cursosLiberados += 3;
-    //     }
-    // }
+    public Plano getPlano() {
+        return plano;
+    }
 
-    // =================================================================================
-    // TDD - 3o PASSO: BLUE / REFACTOR (versao ativa)
-    //
-    // REFATORACAO APLICADA: extracao do metodo aprovado(double media).
-    // MOTIVO (code smell): a condicao "media > 7.0" nao tinha nome. O metodo nomeado
-    //                      revela a intencao e evita a duvida entre "maior que" e "maior
-    //                      ou igual", que e justamente a fronteira protegida por este
-    //                      cenario.
-    // STATUS: testes seguem verdes.
-    // =================================================================================
-    //
-    // public void concluir(Curso curso, double media) {
-    //     cursosConcluidos.add(curso.getTitulo());
-    //     if (aprovado(media)) {
-    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
-    //     }
-    // }
-    //
-    // private boolean aprovado(double media) {
-    //     return media > MEDIA_MINIMA_APROVACAO;
-    // }
+    public int getCursosLiberados() {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
 
-    // #################################################################################
-    // CICLO TDD DO CENARIO 3 (Joao Guilherme Volta Kinol) - US1
-    // BDD: concluir de novo o mesmo curso (apos ja ter recebido os 3 cursos daquela
-    //      conclusao) nao deve bonificar outra vez; o aluno segue com 3 cursos liberados
-    //      e 1 curso conquistado.
-    // #################################################################################
+    public int getCursosConquistados() {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
+    */
 
-    // =================================================================================
-    // TDD - 1o PASSO: RED (teste falhando)
-    // O teste naoDeveLiberarCursosDuasVezesParaOMesmoCurso conclui o mesmo curso duas
-    // vezes. Sem a guarda, a 2a conclusao tambem entra no if e bonifica de novo.
-    //
-    // RESULTADO OBTIDO: AlunoTest -> falha
-    //   getCursosLiberados() = 6, esperado 3 -> org.opentest4j.AssertionFailedError
-    // =================================================================================
-    //
-    // public void concluir(Curso curso, double media) {
-    //     cursosConcluidos.add(curso.getTitulo());
-    //     if (aprovado(media)) {
-    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO; // roda de novo na 2a vez
-    //     }
-    // }
+    // GREEN: implementacao mais simples que faz o teste passar.
+    /*
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
 
-    // =================================================================================
-    // TDD - 2o PASSO: GREEN (teste passando)
-    // Set.add() devolve false quando o titulo ja estava no conjunto; usamos esse retorno
-    // como guarda para ignorar a conclusao repetida antes de bonificar.
-    //
-    // RESULTADO OBTIDO: getCursosLiberados() = 3 e getCursosConquistados() = 1
-    //                   Esperado = Obtido -> teste passou.
-    // =================================================================================
-    //
-    // public void concluir(Curso curso, double media) {
-    //     boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
-    //     if (!primeiraConclusao) {
-    //         return; // ja foi bonificado, ignora
-    //     }
-    //     if (aprovado(media)) {
-    //         cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
-    //     }
-    // }
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
 
-    // =================================================================================
-    // TDD - 3o PASSO: BLUE / REFACTOR (versao ativa no metodo concluir() abaixo)
-    //
-    // REFATORACAO APLICADA: guard clause explicita + validacao de entrada de curso nulo.
-    // MOTIVO (code smell): o metodo aceitava curso nulo em silencio e a intencao do return
-    //                      antecipado da guarda de duplicidade nao estava explicita.
-    // STATUS: testes seguem verdes.
-    // =================================================================================
+    public void concluir(Curso curso, double media) {
+        cursosConcluidos.add(curso.getTitulo());
+        if (media > 7.0) {
+            cursosLiberados += 3;
+        }
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // BLUE: extracao das constantes de negocio, tira os numeros magicos 7.0 e 3 do meio do codigo.
+    /*
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
+
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        cursosConcluidos.add(curso.getTitulo());
+        if (media > MEDIA_MINIMA_APROVACAO) {
+            cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+        }
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // ================= CENARIO 2 (Gabriel) =================
+    // BDD: media <= 7,0 (6,5 e 7,0) -> nenhum curso liberado.
+
+    // RED: naoDeveLiberarCursosQuandoMediaNaoSuperaSete falha, mesmo stub do Cenario 1.
+    /*
+    private final String nome;
+    private final Plano plano;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
+
+    public int getCursosConquistados() {
+        throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
+    }
+    */
+
+    // GREEN: nenhuma linha nova, o "maior que" do Cenario 1 ja cobre 6,5 e 7,0.
+    /*
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
+
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        cursosConcluidos.add(curso.getTitulo());
+        if (media > MEDIA_MINIMA_APROVACAO) {
+            cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+        }
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // BLUE: extracao do metodo aprovado(double media), nomeia a fronteira entre "maior que" e "maior ou igual".
+    /*
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
+
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        cursosConcluidos.add(curso.getTitulo());
+        if (aprovado(media)) {
+            cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+        }
+    }
+
+    private boolean aprovado(double media) {
+        return media > MEDIA_MINIMA_APROVACAO;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // ================= CENARIO 3 (Joao) =================
+    // BDD: concluir de novo o mesmo curso nao bonifica outra vez.
+
+    // RED: naoDeveLiberarCursosDuasVezesParaOMesmoCurso falha, sem guarda a 2a conclusao
+    // soma de novo (liberados = 6, esperado 3).
+    /*
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
+
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        cursosConcluidos.add(curso.getTitulo());
+        if (aprovado(media)) {
+            cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO; // roda de novo na 2a vez
+        }
+    }
+
+    private boolean aprovado(double media) {
+        return media > MEDIA_MINIMA_APROVACAO;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // GREEN: Set.add() devolve false se o titulo ja existia, usado como guarda antes de
+    // bonificar.
+    /*
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
+
+    private final String nome;
+    private final Plano plano;
+    private final Set<String> cursosConcluidos = new HashSet<>();
+    private int cursosLiberados;
+
+    public Aluno(String nome, Plano plano) {
+        this.nome = nome;
+        this.plano = plano;
+    }
+
+    public void concluir(Curso curso, double media) {
+        boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
+        if (!primeiraConclusao) {
+            return;
+        }
+        if (aprovado(media)) {
+            cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
+        }
+    }
+
+    private boolean aprovado(double media) {
+        return media > MEDIA_MINIMA_APROVACAO;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public Plano getPlano() {
+        return plano;
+    }
+
+    public int getCursosLiberados() {
+        return cursosLiberados;
+    }
+
+    public int getCursosConquistados() {
+        return cursosConcluidos.size();
+    }
+    */
+
+    // BLUE: guard clause + validacao de curso nulo. Motivo: curso nulo quebrava em silencio.
 
     private static final double MEDIA_MINIMA_APROVACAO = 7.0;
     private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
