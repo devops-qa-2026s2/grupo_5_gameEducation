@@ -1,0 +1,43 @@
+package com.example.grupo_5_gameeducation.service;
+
+import com.example.grupo_5_gameeducation.dto.AlunoResponse;
+import com.example.grupo_5_gameeducation.dto.ConcluirCursoRequest;
+import com.example.grupo_5_gameeducation.dto.CriarAlunoRequest;
+import com.example.grupo_5_gameeducation.entity.AlunoEntity;
+import com.example.grupo_5_gameeducation.repository.AlunoRepository;
+import java.util.List;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AlunoService {
+
+    private final AlunoRepository alunoRepository;
+
+    public AlunoService(AlunoRepository alunoRepository) {
+        this.alunoRepository = alunoRepository;
+    }
+
+    public AlunoResponse criar(CriarAlunoRequest request) {
+        AlunoEntity entity = new AlunoEntity(request.nome(), request.plano());
+        return AlunoResponse.from(alunoRepository.save(entity));
+    }
+
+    public List<AlunoResponse> listar() {
+        return alunoRepository.findAll().stream().map(AlunoResponse::from).toList();
+    }
+
+    public AlunoResponse buscarPorId(Long id) {
+        return AlunoResponse.from(buscarEntidade(id));
+    }
+
+    public AlunoResponse concluirCurso(Long id, ConcluirCursoRequest request) {
+        AlunoEntity entity = buscarEntidade(id);
+        entity.concluirCurso(request.tituloCurso(), request.media());
+        return AlunoResponse.from(alunoRepository.save(entity));
+    }
+
+    private AlunoEntity buscarEntidade(Long id) {
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
+    }
+}

@@ -236,3 +236,28 @@ private boolean aprovado(double media) {
     return media > MEDIA_MINIMA_APROVACAO;
 }
 ```
+
+## 5. Camadas e API
+
+Com a regra provada pelo TDD, o resto da aplicação foi montado em cima dela: `Entity`, `Repository`, `Service`, `DTO` e `Controller`. A `AlunoEntity` (pacote `entity`) espelha a mesma regra da `Aluno` do domínio, mas é a versão persistida em banco (JPA), com id, nome, plano e a lista de cursos concluídos.
+
+| Camada | Classe | Função |
+|---|---|---|
+| entity | `AlunoEntity` | versão persistida do aluno, com a regra de liberação de cursos |
+| repository | `AlunoRepository` | `JpaRepository` do Spring Data |
+| service | `AlunoService` | cria aluno, busca, lista e registra conclusão de curso |
+| dto | `CriarAlunoRequest`, `ConcluirCursoRequest`, `AlunoResponse` | entrada e saída da API |
+| controller | `AlunoController` | endpoints REST, documentados com Swagger |
+
+### Endpoints
+
+| Método | Caminho | O que faz |
+|---|---|---|
+| POST | `/api/alunos` | cria um aluno |
+| GET | `/api/alunos` | lista os alunos |
+| GET | `/api/alunos/{id}` | busca um aluno pelo id |
+| POST | `/api/alunos/{id}/conclusoes` | registra a conclusão de um curso e aplica a regra da US1 |
+
+A documentação interativa fica em `/swagger-ui.html`.
+
+Testado direto pela API local (perfil padrão, banco H2): criar aluno, concluir "Fundamentos de Agile Testing" com média 8,5 libera 3 cursos e conta 1 conquistado, repetir a mesma conclusão não bonifica de novo, e buscar um aluno inexistente devolve 404.
