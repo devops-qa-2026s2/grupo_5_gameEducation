@@ -32,7 +32,7 @@ Uma plataforma vende cursos online e EAD no modelo de assinatura. O aluno paga u
 | Documentação da API | springdoc-openapi (Swagger UI) |
 | Testes | JUnit 5 e JaCoCo para cobertura |
 | BDD executável (opcional) | Cucumber |
-| Front-end | Typescript + React |
+| Front-end | JavaScript + Vue 3 (CDN) |
 | Empacotamento e execução | Docker e Docker Compose |
 
 ## 1. User Stories, uma por integrante
@@ -307,3 +307,21 @@ Cobertura de 100% em `Aluno`, `Curso` e `Plano`, sem vermelho nem amarelo. O BLU
 Aplicação, PostgreSQL e pgAdmin rodando juntos.
 
 ![Docker](evidencias/prints/04-docker-ps.png)
+## 7. Front-end (Vue 3)
+
+Front-end simples em `frontend/index.html`, com Vue 3 via CDN (sem build, sem npm). Consome os 4 endpoints da API e prova o fluxo da US1 pela tela: criar aluno (nome e plano), listar alunos com cursos liberados e conquistados, e concluir curso (título e média). Média acima de 7,0 mostra 3 cursos liberados; concluir o mesmo curso de novo não duplica. Aluno inexistente (404) vira mensagem na tela, sem quebrar.
+
+O CORS está liberado para qualquer porta de localhost em `config.CorsConfig`, então o servidor estático do front pode subir em 5173 ou em qualquer outra porta.
+
+### Como rodar
+
+1. Suba o backend (perfil padrão, H2): `./mvnw spring-boot:run` — fica em `http://localhost:8080`.
+2. Sirva o front por um servidor estático de localhost (não abra via `file://`, senão o CORS bloqueia a chamada):
+
+   ```
+   cd frontend
+   python3 -m http.server 5173
+   ```
+
+   e abra `http://localhost:5173`.
+3. A URL da API fica no campo **API** no topo da página (padrão `http://localhost:8080`), salva no `localStorage` — não fica hardcoded no código. Se o backend estiver em outra porta, basta editar ali.
