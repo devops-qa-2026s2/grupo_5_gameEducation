@@ -32,14 +32,6 @@ public class Aluno {
         throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
-    }
-
     public int getCursosLiberados() {
         throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
     }
@@ -66,14 +58,6 @@ public class Aluno {
         if (media > 7.0) {
             cursosLiberados += 3;
         }
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
     }
 
     public int getCursosLiberados() {
@@ -107,14 +91,6 @@ public class Aluno {
         }
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
-    }
-
     public int getCursosLiberados() {
         return cursosLiberados;
     }
@@ -139,14 +115,6 @@ public class Aluno {
 
     public void concluir(Curso curso, double media) {
         throw new UnsupportedOperationException("regra de liberacao de cursos ainda nao implementada");
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
     }
 
     public int getCursosLiberados() {
@@ -178,14 +146,6 @@ public class Aluno {
         if (media > MEDIA_MINIMA_APROVACAO) {
             cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
         }
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
     }
 
     public int getCursosLiberados() {
@@ -221,14 +181,6 @@ public class Aluno {
 
     private boolean aprovado(double media) {
         return media > MEDIA_MINIMA_APROVACAO;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
     }
 
     public int getCursosLiberados() {
@@ -270,14 +222,6 @@ public class Aluno {
         return media > MEDIA_MINIMA_APROVACAO;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
-    }
-
     public int getCursosLiberados() {
         return cursosLiberados;
     }
@@ -317,14 +261,6 @@ public class Aluno {
         return media > MEDIA_MINIMA_APROVACAO;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
-    }
-
     public int getCursosLiberados() {
         return cursosLiberados;
     }
@@ -334,7 +270,8 @@ public class Aluno {
     }
     */
 
-    // BLUE: guard clause + validacao de curso nulo. Motivo: curso nulo quebrava em silencio.
+    // BLUE: guard clause contra conclusao repetida. Motivo: nomeia a intencao do return
+    // antecipado, em vez de deixar a condicao negada sem explicacao.
 
     private static final double MEDIA_MINIMA_APROVACAO = 7.0;
     private static final int CURSOS_LIBERADOS_POR_APROVACAO = 3;
@@ -350,9 +287,6 @@ public class Aluno {
     }
 
     public void concluir(Curso curso, double media) {
-        if (curso == null) {
-            throw new IllegalArgumentException("Curso obrigatorio para registrar conclusao");
-        }
         boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
         if (!primeiraConclusao) {
             return; // ja foi bonificado, ignora
@@ -364,14 +298,6 @@ public class Aluno {
 
     private boolean aprovado(double media) {
         return media > MEDIA_MINIMA_APROVACAO;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Plano getPlano() {
-        return plano;
     }
 
     public int getCursosLiberados() {
