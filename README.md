@@ -138,31 +138,34 @@ Resultado: `getCursosLiberados()` igual a 3 e `getCursosConquistados()` igual a 
 Teste (RED):
 
 ```java
-@ParameterizedTest
-@ValueSource(doubles = {6.5, 7.0})
+@Test
 @DisplayName("Cenario 2 (Gabriel): media menor ou igual a 7,0 nao libera cursos")
-void naoDeveLiberarCursosQuandoMediaNaoSuperaSete(double media) {
+void naoDeveLiberarCursosQuandoMediaNaoSuperaSete() {
     // ARRANGE
-    Aluno aluno = new Aluno("Gabriel Ferreira do Nascimento", Plano.BASICO);
+    Aluno alunoMedia65 = new Aluno("Gabriel Ferreira do Nascimento", Plano.BASICO);
+    Aluno alunoMedia70 = new Aluno("Gabriel Ferreira do Nascimento", Plano.BASICO);
     Curso curso = new Curso("Introducao a DevOps");
     // ACTION
-    aluno.concluir(curso, media);
+    alunoMedia65.concluir(curso, 6.5);
+    alunoMedia70.concluir(curso, 7.0);
     // ASSERT
-    assertEquals(0, aluno.getCursosLiberados());
-    assertEquals(1, aluno.getCursosConquistados());
+    assertEquals(0, alunoMedia65.getCursosLiberados());
+    assertEquals(0, alunoMedia70.getCursosLiberados());
 }
 ```
+
+As duas médias do BDD (6,5 e 7,0) são testadas num único método, para manter a suíte em exatamente 3 testes, um por cenário.
 
 Nenhuma linha nova foi necessária no GREEN. A condição escrita para o cenário 1 já cobre este caso, porque usa "maior que" e não "maior ou igual":
 
 ```java
-if (media > 7.0) {
-    cursosLiberados += 3;
+if (media > MEDIA_MINIMA_APROVACAO) {
+    cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
 }
 // medias 6,5 e 7,0 nao entram no if
 ```
 
-Resultado: `getCursosLiberados()` igual a 0 e `getCursosConquistados()` igual a 1. Esperado igual ao obtido, teste verde.
+Resultado: `getCursosLiberados()` igual a 0 para as duas médias. Esperado igual ao obtido, teste verde.
 
 ### Cenário 3, João Guilherme Volta Kinol
 
@@ -190,10 +193,10 @@ O GREEN deste cenário adiciona a guarda contra conclusão repetida do mesmo cur
 public void concluir(Curso curso, double media) {
     boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
     if (!primeiraConclusao) {
-        return; // ja foi bonificado, ignora
+        return;
     }
-    if (media > 7.0) {
-        cursosLiberados += 3;
+    if (aprovado(media)) {
+        cursosLiberados += CURSOS_LIBERADOS_POR_APROVACAO;
     }
 }
 ```
@@ -202,13 +205,13 @@ Resultado: `getCursosLiberados()` igual a 3 e `getCursosConquistados()` igual a 
 
 ### REFACTOR (blue)
 
-Aplicado uma vez sobre o `Aluno.java` já verde. Os três testes continuam passando.
+Cada cenário tem o seu BLUE, registrado em `Aluno.java`. As refatorações se acumulam de um cenário para o outro, e os três testes continuam passando depois de cada uma.
 
-| Motivo (code smell) | Refatoração aplicada |
-|---|---|
-| Números mágicos (7.0 e 3) espalhados pela lógica | extração de constantes com nome de negócio: `MEDIA_MINIMA_APROVACAO = 7.0` e `CURSOS_LIBERADOS_POR_APROVACAO = 3` |
-| Condição sem nome, dúvida entre "maior que" e "maior ou igual" | extração de método privado `aprovado(double media)` |
-| Método aceitava curso nulo em silêncio e o return antecipado não estava explícito | guard clause explícita mais validação de entrada: `if (curso == null) throw new IllegalArgumentException(...)` |
+| Cenário | Motivo (code smell) | Refatoração aplicada |
+|---|---|---|
+| 1 (Bruno) | Números mágicos (7.0 e 3) espalhados pela lógica | extração de constantes com nome de negócio: `MEDIA_MINIMA_APROVACAO = 7.0` e `CURSOS_LIBERADOS_POR_APROVACAO = 3` |
+| 2 (Gabriel) | Condição sem nome, dúvida entre "maior que" e "maior ou igual" | extração de método privado `aprovado(double media)` |
+| 3 (João) | Intenção do return antecipado não estava explícita | guard clause contra conclusão repetida, com comentário nomeando a intenção |
 
 `Aluno.java` depois do refactor:
 
@@ -220,9 +223,6 @@ private final Set<String> cursosConcluidos = new HashSet<>();
 private int cursosLiberados;
 
 public void concluir(Curso curso, double media) {
-    if (curso == null) {
-        throw new IllegalArgumentException("Curso obrigatorio para registrar conclusao");
-    }
     boolean primeiraConclusao = cursosConcluidos.add(curso.getTitulo());
     if (!primeiraConclusao) {
         return; // ja foi bonificado, ignora
@@ -261,3 +261,49 @@ Com a regra provada pelo TDD, o resto da aplicação foi montado em cima dela: `
 A documentação interativa fica em `/swagger-ui.html`.
 
 Testado direto pela API local (perfil padrão, banco H2): criar aluno, concluir "Fundamentos de Agile Testing" com média 8,5 libera 3 cursos e conta 1 conquistado, repetir a mesma conclusão não bonifica de novo, e buscar um aluno inexistente devolve 404.
+
+## 6. Evidências
+
+O `AlunoTest` tem 3 métodos, um por cenário BDD, e o ciclo TDD roda essa mesma suíte contra 3 versões diferentes do `Aluno.java` (RED, GREEN e BLUE). O que muda entre os prints é a implementação, não os testes.
+
+### RED
+
+Testes rodando contra o stub, sem regra implementada.
+
+![RED](evidencias/prints/01-red.png)
+
+Resultado: 3 de 3 falham com `UnsupportedOperationException`.
+
+### GREEN
+
+Implementação mais simples que faz os 3 testes passarem.
+
+![GREEN](evidencias/prints/02-green.png)
+
+Resultado: 3 de 3 passam.
+
+Cobertura do GREEN:
+
+![Cobertura GREEN](evidencias/prints/02-green-jacoco.png)
+
+A cobertura já ficou em 100% no GREEN, sem amarelo nem vermelho.
+
+### BLUE
+
+Versão final e refatorada.
+
+![BLUE](evidencias/prints/03-blue.png)
+
+Resultado: 3 de 3 passam.
+
+Cobertura do BLUE:
+
+![Cobertura BLUE](evidencias/prints/03-blue-jacoco.png)
+
+Cobertura de 100% em `Aluno`, `Curso` e `Plano`, sem vermelho nem amarelo. O BLUE manteve a cobertura e melhorou a legibilidade do código.
+
+### Docker
+
+Aplicação, PostgreSQL e pgAdmin rodando juntos.
+
+![Docker](evidencias/prints/04-docker-ps.png)
