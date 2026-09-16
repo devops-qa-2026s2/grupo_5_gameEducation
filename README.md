@@ -304,7 +304,7 @@ Cobertura de 100% em `Aluno`, `Curso` e `Plano`, sem vermelho nem amarelo. O BLU
 
 ### Docker
 
-Aplicação, PostgreSQL e pgAdmin rodando juntos.
+Aplicação, front-end (Nginx), PostgreSQL e pgAdmin rodando juntos.
 
 ![Docker](evidencias/prints/04-docker-ps.png)
 

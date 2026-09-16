@@ -33,3 +33,6 @@ build/
 .vscode/
 .DS_Store
 docker-compose.override.yml
+
+### Cursor ###
+.cursor/
