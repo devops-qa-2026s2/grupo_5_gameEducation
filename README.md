@@ -307,6 +307,7 @@ Cobertura de 100% em `Aluno`, `Curso` e `Plano`, sem vermelho nem amarelo. O BLU
 Aplicação, PostgreSQL e pgAdmin rodando juntos.
 
 ![Docker](evidencias/prints/04-docker-ps.png)
+
 ## 7. Front-end (Vue 3)
 
 Front-end simples em `frontend/index.html`, com Vue 3 via CDN (sem build, sem npm). Consome os 4 endpoints da API e prova o fluxo da US1 pela tela: criar aluno (nome e plano), listar alunos com cursos liberados e conquistados, e concluir curso (título e média). Média acima de 7,0 mostra 3 cursos liberados; concluir o mesmo curso de novo não duplica. Aluno inexistente (404) vira mensagem na tela, sem quebrar.
